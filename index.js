@@ -1,6 +1,12 @@
 const express = require("express");
 const app = express();
 
+app.use(express.json());
+
+const getRandomInt = (max) => {
+  return Math.floor(Math.random() * max);
+};
+
 var persons = [
   {
     id: 1,
@@ -38,6 +44,27 @@ app.get("/api/persons/:id", (request, response) => {
   }
   if (person) response.json(person);
   else response.status(404).end();
+});
+
+app.post("/api/persons", (request, response) => {
+  const person = request.body;
+  const newId = getRandomInt(50000);
+  person.id = newId;
+
+  if (!person.name || !person.number) {
+    return response.status(400).json({
+      error: "content missing",
+    });
+  }
+
+  if (persons.find((findPerson) => findPerson.name == person.name)) {
+    return response.status(400).json({
+      error: "name already exists",
+    });
+  }
+
+  persons = persons.concat(person);
+  response.json(person);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
