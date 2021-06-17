@@ -1,10 +1,15 @@
 const express = require("express");
+const app = express();
+app.use(express.json());
+
 var morgan = require("morgan");
 
-const app = express();
-
-app.use(morgan("tiny"));
-app.use(express.json());
+// logging data even in the console can be dangerous
+// since it can contain sensitive data and may violate local privacy law
+morgan.token("body", (req, res) => JSON.stringify(req.body));
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
 
 const getRandomInt = (max) => {
   return Math.floor(Math.random() * max);
