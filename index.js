@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
+require("dotenv").config();
 var morgan = require("morgan");
+const mongoose = require("mongoose");
+const Person = require("./models/Person");
 
 const app = express();
 
@@ -43,40 +46,36 @@ var persons = [
 ];
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
 
 app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id;
-  // Sometimes id in data and id in request are not same format.
-  // => change string to Number if they don't match.
-  let person = persons.find((person) => person.id === id);
-  if (!person) {
-    person = persons.find((person) => person.id === Number(id));
-  }
-  if (person) response.json(person);
-  else response.status(404).end();
+
+  Person.findById(id).then((person) => {
+    response.json(person);
+  });
 });
 
 app.post("/api/persons", (request, response) => {
-  const person = request.body;
-  const newId = getRandomInt(50000);
-  person.id = newId;
+  const body = request.body;
 
-  if (!person.name || !person.number) {
+  if (!body.name || !body.number) {
     return response.status(400).json({
       error: "content missing",
     });
   }
 
-  if (persons.find((findPerson) => findPerson.name == person.name)) {
-    return response.status(400).json({
-      error: "name already exists",
-    });
-  }
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+  });
 
-  persons = persons.concat(person);
-  response.json(person);
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
