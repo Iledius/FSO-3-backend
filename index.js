@@ -6,6 +6,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static("build"));
 
 // logging data even in the console can be dangerous
 // since it can contain sensitive data and may violate local privacy law
