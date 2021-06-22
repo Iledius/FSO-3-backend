@@ -50,20 +50,16 @@ app.get("/api/persons/:id", (request, response, next) => {
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: "content missing",
-    });
-  }
-
   const person = new Person({
     name: body.name,
     number: body.number,
   });
 
-  person.save().then((savedPerson) => {
-    response.json(savedPerson);
-  });
+  person
+    .save()
+    .then((savedPerson) => savedPerson.toJSON())
+    .then((savedPersonJson) => response.json(savedPersonJson))
+    .catch((error) => next(error));
 });
 
 app.put("/api/persons/:id", () => {
