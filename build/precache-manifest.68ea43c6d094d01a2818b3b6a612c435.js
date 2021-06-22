@@ -23,4 +23,4 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "revision": "24aecb121d5a1e31ca85",
     "url": "/static/js/runtime-main.455ce434.js"
   }
-]);
+])
